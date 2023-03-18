@@ -5,11 +5,11 @@ export const getFilteredContact = ({ contacts, filter }) => {
     return contacts;
   }
 
-  const normalizedFilter = filter.toLocaleLowerCase();
-  const result = contacts.filter(
-    ({ name, number }) =>
-      name.toLocaleLowerCase().includes(normalizedFilter) ||
-      number.toLocaleLowerCase().includes(normalizedFilter)
-  );
+  const normalizedFilter = filter.toLowerCase();
+
+  const result = contacts.filter(({ name, number }) => {
+    return (name.toLowerCase().includes(normalizedFilter) ||
+           number.toLowerCase().includes(normalizedFilter))
+  });
   return result;
 };

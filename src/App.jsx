@@ -1,12 +1,7 @@
 import MyContacts from './components/MyContacts/MyContacts.jsx';
-import { store, persistor } from './redux/store';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 export const App = () => {
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
         <div
           style={{
             height: '100vh',
@@ -19,7 +14,5 @@ export const App = () => {
         >
           <MyContacts />
         </div>
-      </PersistGate>
-    </Provider>
   );
 };

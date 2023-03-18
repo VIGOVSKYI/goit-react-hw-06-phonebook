@@ -1,39 +1,68 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contacts/contacts-slice';
+import { getAllContacts } from '../../redux/contacts/contacts-selectors';
 
 import styles from './my-contact-form.module.css';
 
-const MyContactForm = ({ onSubmit }) => {
+const MyContactForm = () => {
   const [state, setState] = useState({
     name: '',
     number: '',
   });
 
-  const handlSubmit = e => {
-    e.preventDefault();
-    const { name, number } = state;
-    onSubmit({ name, number });
-    setState({
-      name: '',
-      number: '',
-    });
+  const allContacts = useSelector(getAllContacts);
+
+  const dispatch = useDispatch();
+
+  const handleAddContact = ({ name, number }) => {
+    
+    if (isDublicate(name, number)) {
+      alert(`${name}. Contact: ${number} is already present`);
+      return false;
+    }
+    dispatch(addContact({ name, number }));
   };
 
-  const handlChange = ({ target }) => {
+  const isDublicate = (name, number) => {
+    const normalizedName = name.toLowerCase();
+    const normalizedNumber = number.toLowerCase();
+    const contact = allContacts.find(({ name, number }) => {
+      return (
+        name.toLowerCase() === normalizedName ||
+        number.toLowerCase() === normalizedNumber
+      );
+    });
+
+    return Boolean(contact);
+  };
+
+const handleChange = ({ target }) => {
     const { name, value } = target;
     setState(prevState => {
-      return { ...prevState, [name]: value };
+      return {
+        ...prevState,
+        [name]: value,
+      };
     });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleAddContact({ name, number });
+    setState({ name: '', number: '' });
+  };
+
+  const { name, number } = state;
+  
   return (
-    <form action="" onSubmit={handlSubmit}>
+    <form action="" onSubmit={handleSubmit}>
       <div className={styles.formGroup}>
         <input
           type="text"
-          value={state.name}
+          value={name}
           name="name"
-          onChange={handlChange}
+          onChange={handleChange}
           className={styles.input}
           placeholder="Name"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -43,8 +72,8 @@ const MyContactForm = ({ onSubmit }) => {
       </div>
       <div className={styles.formGroup}>
         <input
-          onChange={handlChange}
-          value={state.number}
+          onChange={handleChange}
+          value={number}
           className={styles.input}
           type="tel"
           name="number"
@@ -60,7 +89,3 @@ const MyContactForm = ({ onSubmit }) => {
 };
 
 export default MyContactForm;
-
-MyContactForm.prototypes = {
- onSubmit: PropTypes.func.isRequired,
-};
